@@ -70,7 +70,7 @@ else()
     $<$<BOOL:${CI}>:-Werror>
   )
   
-  target_link_options(${EXEC_NAME} PRIVATE "${arm_flag}")
+  target_link_options(cquery PRIVATE "${arm_flag}")
   
 
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
