@@ -13,6 +13,14 @@ option(ASAN "Compile with address sanitizers" OFF)
 option(ASSERTS "Compile with asserts enabled" OFF)
 option(CI "Add -Werror or equivalent" OFF)
 
+set(arm_flag "")
+cmake_host_system_information(RESULT os_platform QUERY OS_PLATFORM)
+message(STATUS "OS Platform:${os_platform}")
+if("${os_platform}" STREQUAL "armv7l")
+    set(arm_flag "-latomic")
+endif()
+
+
 # Sources for the executable are specified at end of CMakeLists.txt
 add_executable(cquery "")
 
@@ -61,6 +69,9 @@ else()
     -Wno-unknown-pragmas
     $<$<BOOL:${CI}>:-Werror>
   )
+  
+  target_link_options(${EXEC_NAME} PRIVATE "${arm_flag}")
+  
 
   if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
     target_compile_options(cquery PRIVATE -Wno-return-type -Wno-unused-result)
@@ -70,7 +81,7 @@ else()
     target_compile_options(cquery PRIVATE
       $<$<CONFIG:Debug>:-fno-limit-debug-info>
     )
-  endif()
+   endif()
 
   if(ASAN)
     target_compile_options(cquery PRIVATE -fsanitize=address,undefined)
